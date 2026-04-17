@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>レポート管理アプリ</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">School Report Planner</p>
+        <h1>レポート管理</h1>
+        <p class="hero-copy">
+          開始日 2026-04-19 から、日付一覧でレポート予定を管理します。
+          Supabase に保存するので、同じアカウントで PC とスマホから同期できます。
+        </p>
+      </div>
+      <div class="hero-actions">
+        <button id="toggleConfigButton" class="ghost-button" type="button">接続設定</button>
+        <button id="resetAppButton" class="ghost-button" type="button">初期化</button>
+        <button id="signOutButton" class="ghost-button hidden" type="button">ログアウト</button>
+      </div>
+    </header>
+
+    <section id="messageArea" class="message-stack" aria-live="polite"></section>
+
+    <section id="configCard" class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Supabase 接続設定</h2>
+          <p>URL と anon key を保存してからログインします。</p>
+        </div>
+        <span id="connectionBadge" class="badge badge-muted">未接続</span>
+      </div>
+      <form id="configForm" class="stack-form">
+        <label>
+          <span>Supabase URL</span>
+          <input id="supabaseUrlInput" name="supabaseUrl" type="url" placeholder="https://xxxxx.supabase.co" required>
+        </label>
+        <label>
+          <span>Supabase anon key</span>
+          <textarea id="supabaseAnonKeyInput" name="supabaseAnonKey" rows="4" placeholder="eyJ..." required></textarea>
+        </label>
+        <div class="inline-actions">
+          <button class="primary-button" type="submit">接続情報を保存</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="authCard" class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>ログイン</h2>
+          <p>同じメールアドレスとパスワードで、複数端末のデータを共有できます。</p>
+        </div>
+        <span id="authBadge" class="badge badge-muted">未ログイン</span>
+      </div>
+      <form id="authForm" class="stack-form">
+        <label>
+          <span>メールアドレス</span>
+          <input id="emailInput" name="email" type="email" autocomplete="username" required>
+        </label>
+        <label>
+          <span>パスワード</span>
+          <input id="passwordInput" name="password" type="password" autocomplete="current-password" minlength="6" required>
+        </label>
+        <div class="inline-actions">
+          <button id="signInButton" class="primary-button" type="submit">ログイン</button>
+          <button id="signUpButton" class="ghost-button" type="button">新規登録</button>
+        </div>
+      </form>
+    </section>
+
+    <main id="appShell" class="app-grid hidden">
+      <section class="panel summary-panel">
+        <div class="panel-head">
+          <div>
+            <h2>全体サマリー</h2>
+            <p id="syncStatusText">読み込み待機中</p>
+          </div>
+          <button id="refreshButton" class="ghost-button" type="button">再読み込み</button>
+        </div>
+        <div id="summaryCards" class="summary-cards"></div>
+      </section>
+
+      <section class="panel form-panel">
+        <div class="panel-head">
+          <div>
+            <h2>予定を追加</h2>
+            <p>同一科目は 1 日 2 枚まで。残りが足りないときは追加可能分だけ登録します。</p>
+          </div>
+        </div>
+        <form id="scheduleForm" class="stack-form">
+          <label>
+            <span>日付</span>
+            <input id="dateInput" name="date" type="date" required>
+          </label>
+          <label>
+            <span>科目</span>
+            <select id="subjectSelect" name="subjectId" required></select>
+          </label>
+          <label>
+            <span>枚数</span>
+            <input id="pagesInput" name="pages" type="number" min="1" step="1" value="1" required>
+          </label>
+          <div class="inline-actions">
+            <button class="primary-button" type="submit">予定を追加</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel progress-panel">
+        <div class="panel-head">
+          <div>
+            <h2>科目別進捗</h2>
+            <p>総枚数・割り当て済み・未割り当て・完了済みを確認できます。</p>
+          </div>
+        </div>
+        <div id="subjectProgressList" class="subject-progress-list"></div>
+      </section>
+
+      <section class="panel timeline-panel">
+        <div class="panel-head">
+          <div>
+            <h2>日付一覧</h2>
+            <p id="timelineInfo">開始日から順番に表示します。</p>
+          </div>
+          <button id="loadMoreButton" class="ghost-button" type="button">30日分さらに表示</button>
+        </div>
+        <div id="dateList" class="date-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <template id="messageTemplate">
+    <article class="message-item">
+      <strong class="message-title"></strong>
+      <p class="message-body"></p>
+    </article>
+  </template>
+
+  <script src="./app.js"></script>
+</body>
+</html>
